@@ -112,14 +112,12 @@ class Mentions extends Collection {
           continue;
         }
 
-        /*
         remote::post($endpoint, array(
           'data' => array(
-            'src'    => $src,
+            'source' => $src,
             'target' => $target
           )
         ));
-        */
 
         return $endpoint;
                 
@@ -138,6 +136,7 @@ class Mentions extends Collection {
       'likes'     => $this->filterBy('type', 'like'),
       'replies'   => $this->filterBy('type', 'reply'),
       'mentions'  => $this->filterBy('type', 'mention'),
+      'reposts'   => $this->filterBy('type', 'repost'),
       'headline'  => $this->headline
     ));
 

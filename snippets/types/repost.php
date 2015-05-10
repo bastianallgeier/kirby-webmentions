@@ -1,1 +1,1 @@
-<?php require(__DIR__ . DS . 'reply.php') ?>
+<?php require(__DIR__ . DS . 'like.php') ?>

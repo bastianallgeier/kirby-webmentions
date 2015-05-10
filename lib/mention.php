@@ -36,6 +36,7 @@ class Mention extends Obj {
     $this->id     = sha1($file);
 
     $this->convertTwitterFavorite();
+    $this->convertTwitterRepost();
 
     $this->field('title', 'name');
     $this->field('text');
@@ -59,7 +60,21 @@ class Mention extends Obj {
 
   }
 
+  public function convertTwitterRepost() {
+
+    if(!empty($this->data['url']) and preg_match('!https:\/\/twitter.com\/(.*?)\/status!', $this->data['url'])) {
+      
+      if(!empty($this->data['name']) and $this->data['name'] == 'reposts this.') {
+        $this->data['type'] = 'repost';        
+      } 
+
+    }
+
+  }
+
+
   public function field($key, $field = null) {
+
     if(is_null($field)) $field = $key;
 
     $value = a::get($this->data, $field);

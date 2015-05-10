@@ -1,5 +1,14 @@
 <div class="webmentions">
 
+  <?php if($reposts->count()): ?>
+  <section class="webmentions-reposts">
+    <h1><?php echo $reposts->count() ?> reposts</h1>
+    <?php foreach($reposts as $repost): ?>
+    <?php echo $repost ?>
+    <?php endforeach ?>
+  </section>
+  <?php endif ?>
+
   <?php if($likes->count()): ?>
   <section class="webmentions-likes">
     <h1><?php echo $likes->count() ?> likes</h1>
