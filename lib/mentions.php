@@ -11,6 +11,7 @@ use Str;
 use V;
 use Remote;
 use Tpl;
+use Exception;
 
 class Mentions extends Collection {
 
@@ -50,8 +51,13 @@ class Mentions extends Collection {
       if($file == 'pings.json') continue;
 
       // register a new webmention
-      $mention = new Mention($this->page, $this->root . DS . $file);
-      $this->append($mention->id(), $mention);
+
+      try {
+        $mention = new Mention($this->page, $this->root . DS . $file);
+        $this->append($mention->id(), $mention);        
+      } catch(Exception $e) {
+
+      }
 
     }
 

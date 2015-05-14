@@ -29,6 +29,14 @@ class Author extends Obj {
     $this->data    = $mention->data['author'];
     $this->page    = $mention->page;
 
+    if(empty($this->data['url'])) {
+      $this->data['url'] = $this->mention->data['url'];
+    }
+
+    if(empty($this->data['name'])) {
+      $this->data['name'] = url::short(url::base($this->data['url']));
+    }
+
     $this->field('url');
     $this->field('name');
 
@@ -66,7 +74,8 @@ class Author extends Obj {
 
     if(!$photo->exists() or !$photo->type() == 'image') {
       $photo = new Obj(array(
-        'url' => $this->data['photo']
+        'url'    => $this->data['photo'],
+        'exists' => !empty($this->data['photo'])
       ));
     }
 

@@ -8,6 +8,7 @@ use Data;
 use Field;
 use Tpl;
 use V;
+use Exception;
 
 class Mention extends Obj {
 
@@ -28,6 +29,11 @@ class Mention extends Obj {
     if(!is_array($data) or empty($data)) {
       throw new Exception('Invalid web mention');
     }
+
+    if(empty($data['url'])) {
+      throw new Exception('No url found');
+    }
+
 
     $this->data   = $data;
     $this->page   = $page;
