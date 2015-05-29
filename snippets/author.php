@@ -7,7 +7,7 @@
   <figcaption class="webmention-author-meta">
     <a href="<?php echo $author->url() ?>" class="webmention-author-name"><?php echo $author->name() ?></a>
     <time class="webmention-author-date" datetime="<?php echo $mention->date('c') ?>">
-      <a href="<?php echo $mention->url() ?>"><?php echo $mention->date('M Y') ?></a>
+      <a href="<?php echo $mention->url() ?>"><?php echo $mention->date('d M Y - h:i') ?></a>
     </time>
   </figcaption>
 </figure>

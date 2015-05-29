@@ -59,23 +59,29 @@ class Author extends Obj {
     if(!is_null($this->photo)) return $this->photo;
 
     $extension = f::extension($this->data['photo']);
-    $filename  = sha1($this->url) . '.' . $extension;
+    $filename  = rtrim(sha1($this->url) . '.' . $extension, '.');    
+    $path      = c::get('webmentions.images', 'assets/images/mentions');
+    $root      = kirby()->roots()->index() . DS . str_replace('/', DS, $path) . DS . $filename;
+    $url       = kirby()->urls()->index() . '/' . $path . '/' . $filename;
+    $photo     = new Media($root, $url);
+    
+    if(!$photo->exists()) {    
 
-    $path = c::get('webmentions.images', 'assets/images/mentions');
-    $root = kirby()->roots()->index() . DS . str_replace('/', DS, $path) . DS . $filename;
-    $url  = kirby()->urls()->index() . '/' . $path . '/' . $filename;
+      $image   = remote::get($this->data['photo']);
+      $allowed = array('image/jpeg', 'image/png', 'image/gif');
 
-    $photo = new Media($root, $url);
-
-    if(!$photo->exists()) {
-      $image = remote::get($this->data['photo']);
       f::write($root, $image->content());
+
+      if(!in_array($photo->mime(), $allowed) or $photo->size() == 0) {
+        $photo->delete();
+      }
+
     }
 
     if(!$photo->exists() or !$photo->type() == 'image') {
       $photo = new Obj(array(
         'url'    => $this->data['photo'],
-        'exists' => !empty($this->data['photo'])
+        'exists' => false
       ));
     }
 

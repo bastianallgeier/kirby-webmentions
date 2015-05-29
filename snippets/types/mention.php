@@ -1,4 +1,4 @@
-<article class="webmention webmention-mention" data-file="<?php echo $mention->file() ?>">
+<article class="webmention webmention-mention">
   <?php echo $author ?>
   <?php if(!$mention->text()->isEmpty()): ?>
   <div class="webmention-text">

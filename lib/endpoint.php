@@ -6,6 +6,9 @@ use V;
 use Str;
 use Response;
 use F;
+use R;
+use Exception;
+use Tpl;
 
 class Endpoint {
 
@@ -13,15 +16,44 @@ class Endpoint {
 
     $endpoint = $this;
 
-    kirby()->routes(array(
-      array(
-        'pattern' => 'webmention', 
-        'method'  => 'GET|POST', 
-        'action'  => function() use($endpoint) {        
-          echo $endpoint->start();
+    if($page = page('webmention') and kirby()->path() == $page->uri()) {
+
+      if(r::is('post')) {
+
+        try {
+          $endpoint->start();
+          header::status(202);        
+          tpl::set('status', 'success');
+          tpl::set('alert', null);
+        } catch(Exception $e) {
+          header::status(400);        
+          tpl::set('status', 'error');
+          tpl::set('alert', $e->getMessage());
         }
-      )
-    ));
+
+      } else {
+        tpl::set('status', 'idle');        
+      }
+
+    } else {
+
+      kirby()->routes(array(
+        array(
+          'pattern' => 'webmention', 
+          'method'  => 'GET|POST', 
+          'action'  => function() use($endpoint) {        
+
+            try {
+              $endpoint->start();        
+              echo response::success('Yay', 202);
+            } catch(Exception $e) {
+              echo response::error($e->getMessage());
+            }
+          }
+        )
+      ));
+
+    }
 
   }
 
@@ -31,15 +63,15 @@ class Endpoint {
     $target = get('target');
 
     if(!v::url($src)) {
-      return response::error('Invalid source');
+      throw new Exception('Invalid source');
     }
 
     if(!v::url($target)) {
-      return response::error('Invalid target');
+      throw new Exception('Invalid target');
     }
 
     if(!str::contains($target, site()->url())) {
-      return response::error('Invalid target');
+      throw new Exception('Invalid target');
     }
 
     require_once(dirname(__DIR__) . DS . 'vendor' . DS . 'mf2.php');
@@ -49,7 +81,7 @@ class Endpoint {
     $result = \IndieWeb\comments\parse($data['items'][0], $src);
 
     if(empty($result)) {
-      return response::error('Probably spam');
+      throw new Exception('Probably spam');
     }
 
     $path = ltrim(str_replace(site()->url(), '', $target), '/');
@@ -69,10 +101,10 @@ class Endpoint {
 
       f::write($file, $json);
 
-      return response::success('yay', $result, 202);
+      return true;
 
     } else {
-      return response::error('Invalid page');
+      throw new Exception('Invalid page');
     }
 
   }
