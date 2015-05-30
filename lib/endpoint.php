@@ -2,6 +2,7 @@
 
 namespace Kirby\Webmentions;
 
+use Header;
 use V;
 use Str;
 use Response;
