@@ -65,20 +65,29 @@ class Author extends Obj {
     $url       = kirby()->urls()->index() . '/' . $path . '/' . $filename;
     $photo     = new Media($root, $url);
     
-    if(!$photo->exists()) {    
+    // only allow images with a correct extension
+    if(in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']) && !$photo->exists()) {    
 
       $image   = remote::get($this->data['photo']);
+      $mime    = a::get($image->headers, 'Content-Type');      
       $allowed = array('image/jpeg', 'image/png', 'image/gif');
+      
+      // check the mime type of the remote request response
+      if(in_array($mime, $allowed)) {
 
-      f::write($root, $image->content());
-
-      if(!in_array($photo->mime(), $allowed) or $photo->size() == 0) {
-        $photo->delete();
+        // write the file to disk
+        f::write($root, $image->content());
+  
+        // check the mime type and file size again to make sure it's all ok
+        if(!in_array($photo->mime(), $allowed) or $photo->size() == 0) {
+          $photo->delete();
+        }        
+      
       }
 
     }
 
-    if(!$photo->exists() or !$photo->type() == 'image') {
+    if(!$photo->exists() || $photo->type() !== 'image') {
       $photo = new Obj(array(
         'url'    => $this->data['photo'],
         'exists' => false
